@@ -4,7 +4,7 @@
 static const std::string err_symvol = "Число содержит недопустимый символ: ";
 static const std::string err_null = "Число не определено";
 
-bool valid_digit(char symvol)
+bool big_integer::valid_digit(char symvol)
 {
     if(symvol < '0' || symvol > '9')
     {
@@ -74,4 +74,10 @@ big_integer::big_integer(const std::string& str)
     {
         throw MyException(err_null);
     }
+}
+
+big_integer::~big_integer()
+{
+    delete[] dig;
+    dig = nullptr;
 }
