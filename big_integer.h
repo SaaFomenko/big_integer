@@ -3,12 +3,14 @@
 
 #include <memory>
 #include <vector>
+#include <string>
 
 
 class big_integer
 {
     private:
         char*  dig;
+        unsigned int size;
     
     public:
         big_integer(const char* str);

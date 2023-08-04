@@ -113,10 +113,69 @@ big_integer& big_integer::operator=(big_integer&& other)
 
 big_integer big_integer::operator+(const big_integer& other)
 {
-    big_integer result = size > other.size ? big_integer(*this) : big_integer(other);
+    unsigned int new_size = 0;
 
-    
+    char* new_dig = nullptr;
 
+    if (size < other.size)
+    {
+        new_size = other.size + 1;
+        new_dig = new char[new_size]{};
+        
+    }
+
+    if (size >= other.size)
+    {
+        new_size = size + 1;
+    }
+
+    for (unsigned int i = new_size - 2; i >= 0; --i)
+
+
+    for (unsigned int i = size - 1, j = new_size - 2; i >= 0; --i, --j)
+    {
+        int x = static_cast<int>(dig[i] - '0');
+        int y = static_cast<int>(other.dig[j] - '0');
+        int result = x + y;
+
+        if (result > 9)
+        {
+            result -= 10;
+
+            int up_level = j - 1;
+            if (up_level < 0)
+            {
+                ++new_size;
+                char* temp = new char[new_size]{};
+                for (unsigned int k = 0; k < new_size - 1; ++k)
+                {
+                    if (k == 0)
+                    {
+                        temp[k] = '0' + 1;
+                    }
+                    else
+                    {
+                        temp[k] = new_dig[k];
+                    }
+                }
+
+                delete[] new_dig;
+                new_dig = temp;
+                delete[] temp;
+                temp = nullptr;
+            }
+            else
+            {
+                ++new_dig[up_level];
+            }
+        }
+
+        new_dig[j] = '0' + result;
+    }
+
+    const char* str = new_dig;
+
+    return big_integer(str);
 }
 
 big_integer::~big_integer()
