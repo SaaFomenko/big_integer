@@ -43,6 +43,7 @@ big_integer::big_integer(const char* str)
     if (size > 0)
     {
         ++size;
+        // Need realese void clear_null()
         dig = new char[size];
         for (unsigned int i = 0;  i < size; ++i)
         {
@@ -113,10 +114,45 @@ big_integer& big_integer::operator=(big_integer&& other)
 
 big_integer big_integer::operator+(const big_integer& other)
 {
-    big_integer result = size > other.size ? big_integer(*this) : big_integer(other);
+    char* chars;
+    bool equalSize = size == other.size;
+    unsigned int new_size = 0; 
+    unsigned int low_size = 0; 
 
-    
+    if (size >= other.size)
+    {
+        new_size = size + 3;
+        low_size = other.size;
+    }
+    else
+    {
+        new_size = other.size + 3;
+        low_size = size;
+    }
 
+    chars = new char[new_size]{};
+
+    for (int i = new_size - 2, j = low_size - 1;
+        j >= 0;
+        --i, --j)
+    {
+        int result = static_cast<int>((dig[j] - '0') + (other.dig[j] - '0'));
+        if (result >= 10)
+        {
+            result -= 10;
+            int up_level = i - 1;
+            if (chars[up_level] == 0)
+            {
+                chars[up_level] = '0' + 1;
+            }
+            else
+            {
+                ++chars[up_level];
+            }
+        }
+
+        chars[i] = '0' + result;
+    }
 }
 
 big_integer::~big_integer()
