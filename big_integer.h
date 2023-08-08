@@ -29,8 +29,8 @@ class big_integer
 
         bool valid_digit(char symvol);
         std::string to_str();
-        void clear_null(const char* str);
-        void clear_null(std::string str);
+        void dig_init(const char* str);
+        void dig_init(std::string str);
 };
 
 #endif

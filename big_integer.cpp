@@ -4,17 +4,6 @@
 static const std::string err_symvol = "Число содержит недопустимый символ: ";
 static const std::string err_null = "Число не определено.";
 
-bool big_integer::valid_digit(char symvol)
-{
-    if(symvol < '0' || symvol > '9')
-    {
-        const std::string err = err_symvol + std::to_string(symvol);
-        throw MyException(err);
-    }
-
-    return true;
-}
-
 class MyException : public std::exception
 {
     private:
@@ -30,24 +19,38 @@ class MyException : public std::exception
         }
 };
 
-big_integer::big_integer(const char* str)
+bool big_integer::valid_digit(char symvol)
+{
+    if(symvol < '0' || symvol > '9')
+    {
+        const std::string err = err_symvol + std::to_string(symvol);
+        throw MyException(err);
+    }
+
+    return true;
+}
+
+void big_integer::dig_init(const char* str)
 {
     size = 0;
+    unsigned int null_count = 0;
 
     while(str[size] != 0)
     {
-        
+        if (str[size] == '0') ++null_count; 
         size += static_cast<int>(valid_digit(str[size]));
     }
 
+    size -= null_count; 
+
     if (size > 0)
     {
-        ++size;
+        //++size;
         // Need realese void clear_null()
         dig = new char[size];
-        for (unsigned int i = 0;  i < size; ++i)
+        for (unsigned int i = 0, j = null_count - 1;  i < size; ++i, ++j)
         {
-            dig[i] = str[i];
+            dig[i] = str[j];
         }
     }
     else
@@ -56,25 +59,17 @@ big_integer::big_integer(const char* str)
     }
 }
 
+big_integer::big_integer(const char* str)
+{
+    dig_init(str);
+}
+
 big_integer::big_integer(const std::string& str)
 {
     size = str.length();
-    if (size > 0)
-    {
-        dig = new char[size];
-        const char* chars = str.c_str();
-        for (unsigned int i = 0; i < size; ++i)
-        {
-            if (valid_digit(chars[i]))
-            {
-                dig[i] = chars[i];
-            }
-        }
-    }
-    else
-    {
-        throw MyException(err_null);
-    }
+    const char* chars = str.c_str();
+
+    dig_init(chars);
 }
 
 big_integer::big_integer(const big_integer& other)
@@ -112,22 +107,34 @@ big_integer& big_integer::operator=(big_integer&& other)
     return *this = big_integer(other);
 }
 
+const char* big_integer::sum()
+{}
+
 big_integer big_integer::operator+(const big_integer& other)
 {
-    char* chars;
-    bool equalSize = size == other.size;
     unsigned int new_size = 0; 
-    unsigned int low_size = 0; 
+    char* new_arr = nullptr;
+
+    unsigned int low_size = 0;
+    char* low_arr = nullptr;
+
+    unsigned int null_count = 0;
 
     if (size >= other.size)
     {
         new_size = size + 3;
+        new_arr = new char[new_size]{};
+
         low_size = other.size;
+        low_arr = other.dig;
     }
     else
     {
         new_size = other.size + 3;
+        new_arr = other.dig;
+
         low_size = size;
+        low_arr = dig;
     }
 
     chars = new char[new_size]{};
@@ -136,7 +143,7 @@ big_integer big_integer::operator+(const big_integer& other)
         j >= 0;
         --i, --j)
     {
-        int result = static_cast<int>((dig[j] - '0') + (other.dig[j] - '0'));
+        int result = static_cast<int>((new_arr[i] - '0') + (low_arr[j] - '0'));
         if (result >= 10)
         {
             result -= 10;
