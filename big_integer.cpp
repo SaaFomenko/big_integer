@@ -107,8 +107,10 @@ big_integer& big_integer::operator=(big_integer&& other)
     return *this = big_integer(other);
 }
 
-const char* big_integer::sum()
-{}
+const char* big_integer::sum(const big_integer& other, bool isMore)
+{
+
+}
 
 big_integer big_integer::operator+(const big_integer& other)
 {
