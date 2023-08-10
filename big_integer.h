@@ -24,8 +24,8 @@ class big_integer
 
         virtual ~big_integer();
 
-        big_integer operator+(const big_integer& other);
-        big_integer operator*(const big_integer& other);
+        big_integer operator+(big_integer& other);
+        big_integer operator*(big_integer& other);
 
         bool valid_digit(char symvol);
         std::string to_str();

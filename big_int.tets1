@@ -119,75 +119,61 @@ std::string big_integer::to_str()
     return str;
 }
 
-big_integer big_integer::operator+(big_integer& other)
+const char* big_integer::sum(const big_integer& other)
 {
-    std::string a = this->to_str();
-    std::string b = other.to_str();
-    std::string c = "";
 
-    while (a.length() != b.length())
-    {
-        if (a.length() < b.length())
-            a = "0" + a;
-        else
-            b = "0" + b;
-    }
-
-    a = "0" + a;
-    b = "0" + b;
-
-    int sum = 0;
-    int r = 0;
-    unsigned int size = a.length();
-
-    for (unsigned int i = size - 1; i >= 0; --i)
-    {
-        sum = (a[i] - '0') + (b[i] - '0') + r;
-        r = sum / 10;
-        c = std::to_string(sum % 10 + '0') + c;
-    }
-
-    if (c[0] == '0')
-        c.erase(0, 1);
-
-    return big_integer(c);
 }
 
-big_integer big_integer::operator*(big_integer& other)
+big_integer big_integer::operator+(const big_integer& other)
 {
-    std::string row = "";
-    std::string col = "";
-    std::string c = "";
-    big_integer result("0"); //?
+    unsigned int new_size = 0; 
+    char* new_arr = nullptr;
 
-    if (size < other.size)
+    unsigned int low_size = 0;
+    char* low_arr = nullptr;
+
+    unsigned int null_count = 0;
+
+    if (size >= other.size)
     {
-        row = to_str();
-        col = other.to_str();
-        col = "0" + col;
+        new_size = size + 3;
+        new_arr = new char[new_size]{};
+
+        low_size = other.size;
+        low_arr = other.dig;
     }
     else
     {
-        row = other.to_str();
-        col = to_str();
-        col = "0" + col;
+        new_size = other.size + 3;
+        new_arr = other.dig;
+
+        low_size = size;
+        low_arr = dig;
     }
 
-    int mult = 0;
-    int r = 0;
-    for (unsigned int i = row.length() - 1; i >= 0; --i)
+    chars = new char[new_size]{};
+
+    for (int i = new_size - 2, j = low_size - 1;
+        j >= 0;
+        --i, --j)
     {
-        for (unsigned int j = col.length() - 1; --j)
+        int result = static_cast<int>((new_arr[i] - '0') + (low_arr[j] - '0'));
+        if (result >= 10)
         {
-            mult = (row[i] - '0') * (col[j] - '0');
-            r = mult / 10;
-            c = std::to_string(mult % 10 + '0') + c;
+            result -= 10;
+            int up_level = i - 1;
+            if (chars[up_level] == 0)
+            {
+                chars[up_level] = '0' + 1;
+            }
+            else
+            {
+                ++chars[up_level];
+            }
         }
-        big_integer temp = big_integer(c);
-        result = result + temp;
-    }
-    
 
+        chars[i] = '0' + result;
+    }
 }
 
 big_integer::~big_integer()
