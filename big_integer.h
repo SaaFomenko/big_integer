@@ -10,7 +10,7 @@ class big_integer
 {
     private:
         char*  dig;
-        unsigned int size;
+        int size;
     
     public:
         big_integer(const char* str);

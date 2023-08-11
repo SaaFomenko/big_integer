@@ -35,20 +35,31 @@ void big_integer::dig_init(const char* str)
     size = 0;
     unsigned int null_count = 0;
 
+    while(str[size] == '0') ++null_count;
+
     while(str[size] != 0)
     {
-        if (str[size] == '0') ++null_count; 
         size += static_cast<int>(valid_digit(str[size]));
     }
 
+    unsigned int str_size = size;
     size -= null_count; 
 
-    if (size > 0)
+    if (size == 0)
+    {
+        dig = new char[1];
+        dig[0] = '0';
+        size = 1;
+    }
+    else if (size > 0)
     {
         //++size;
         // Need realese void clear_null()
         dig = new char[size];
-        for (unsigned int i = 0, j = null_count - 1;  i < size; ++i, ++j)
+        unsigned int j_str = 0;
+        if (null_count > 0) j_str = null_count - 1;
+
+        for (unsigned int i = 0, j = j_str ;  i < size; ++i, ++j)
         {
             dig[i] = str[j];
         }
@@ -92,7 +103,7 @@ big_integer::big_integer(const big_integer& other)
     }
 }
 
-big_integer::big_integer(big_integer&& other) : 
+big_integer::big_integer(big_integer&& other) noexcept : 
     size(other.size),
     dig(other.dig)
 {}
@@ -102,7 +113,7 @@ big_integer& big_integer::operator=(const big_integer& other)
     return *this = big_integer(other);
 }
 
-big_integer& big_integer::operator=(big_integer&& other)
+big_integer& big_integer::operator=(big_integer&& other) noexcept
 {
     return *this = big_integer(other);
 }
@@ -158,7 +169,7 @@ big_integer big_integer::operator*(big_integer& other)
     std::string row = "";
     std::string col = "";
     std::string c = "";
-    big_integer result("0"); //?
+    big_integer result("0");
 
     if (size < other.size)
     {
@@ -177,9 +188,9 @@ big_integer big_integer::operator*(big_integer& other)
     int r = 0;
     for (unsigned int i = row.length() - 1; i >= 0; --i)
     {
-        for (unsigned int j = col.length() - 1; --j)
+        for (unsigned int j = col.length() - 1; j >= 0; --j)
         {
-            mult = (row[i] - '0') * (col[j] - '0');
+            mult = (row[i] - '0') * (col[j] - '0') + r;
             r = mult / 10;
             c = std::to_string(mult % 10 + '0') + c;
         }
@@ -187,7 +198,7 @@ big_integer big_integer::operator*(big_integer& other)
         result = result + temp;
     }
     
-
+    return result;
 }
 
 big_integer::~big_integer()
