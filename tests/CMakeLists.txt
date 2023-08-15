@@ -8,7 +8,7 @@ file(GLOB
 
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
-add_library(${PROJECT_NAME}_lib STATIC 
+add_library(tests_lib STATIC 
 	${lib_source})
 
 # These tests need their own main

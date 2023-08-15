@@ -8,8 +8,8 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
-set(public_header ./${PROJECT_NAME}.h)
-set(sources ./${PROJECT_NAME}.cpp)
+set(public_header lib/${PROJECT_NAME}.h)
+set(sources lib/${PROJECT_NAME}.cpp)
 
 add_library(${PROJECT_NAME}_lib ${sources} ${public_header})
 

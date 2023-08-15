@@ -45,10 +45,10 @@ void big_integer::dig_init(const char* str)
     unsigned int str_size = size;
     size -= null_count; 
 
-    if (size == 0)
+
+    if (size <= 0)
     {
-        dig = new char[1];
-        dig[0] = '0';
+        dig = new char[1]{'0'};
         size = 1;
     }
     else if (size > 0)
@@ -69,6 +69,11 @@ void big_integer::dig_init(const char* str)
         throw MyException(err_null);
     }
 }
+
+big_integer::big_integer() : 
+    dig{new char[1]{'0'}},
+    size{1}
+{}
 
 big_integer::big_integer(const char* str)
 {
@@ -118,15 +123,34 @@ big_integer& big_integer::operator=(big_integer&& other) noexcept
     return *this = big_integer(other);
 }
 
+big_integer& big_integer::operator=(const char* str)
+{
+    delete[] dig; 
+    dig_init(str);
+
+    return *this;
+}
+
+big_integer& big_integer::operator=(const std::string& str)
+{
+    delete[] dig;
+    const char* chars = str.c_str();
+
+    dig_init(chars);
+
+    return *this;
+}
+
 std::string big_integer::to_str()
 {
-    std::string str = "";
+    std::string str = dig;
 
-    for (unsigned int i = 0; i < size; ++i)
-    {
-        str += std::to_string(dig[i]);
-    }
+    // for (unsigned int i = 0; i < size; ++i)
+    // {
+    //     str += std::to_string(dig[i]);
+    // }
 
+    std::cout << str << '\n';
     return str;
 }
 
@@ -199,6 +223,13 @@ big_integer big_integer::operator*(big_integer& other)
     }
     
     return result;
+}
+
+std::ostream& operator<<(std::ostream& out, big_integer& obj)
+{
+    out << obj.to_str();
+
+    return out;
 }
 
 big_integer::~big_integer()

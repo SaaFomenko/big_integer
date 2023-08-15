@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <vector>
-#include <string>
+#include <iostream>
 
 
 class big_integer
@@ -13,6 +13,7 @@ class big_integer
         int size;
     
     public:
+        big_integer();
         big_integer(const char* str);
         big_integer(const std::string& str);
 
@@ -21,11 +22,14 @@ class big_integer
 
         big_integer& operator=(const big_integer& other);
         big_integer& operator=(big_integer&& other) noexcept;
+        big_integer& operator=(const char* str);
+        big_integer& operator=(const std::string& str);
 
         virtual ~big_integer();
 
         big_integer operator+(big_integer& other);
         big_integer operator*(big_integer& other);
+        friend std::ostream& operator<<(std::ostream& out, big_integer& obj);
 
         bool valid_digit(char symvol);
         std::string to_str();
