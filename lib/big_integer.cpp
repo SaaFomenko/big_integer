@@ -32,14 +32,21 @@ bool big_integer::valid_digit(char symvol)
 
 void big_integer::dig_init(const char* str)
 {
-    size = 0;
+    int i = 0;
     unsigned int null_count = 0;
 
-    while(str[size] == '0') ++null_count;
-
-    while(str[size] != 0)
+    while(str[i] != 0)
     {
-        size += static_cast<int>(valid_digit(str[size]));
+        i += static_cast<int>(valid_digit(str[i]));
+    }
+
+    size = i;
+
+    i = 0;
+    while(str[i] == '0' && i < size)
+    { 
+        ++null_count;
+        ++i;
     }
 
     unsigned int str_size = size;
@@ -50,19 +57,24 @@ void big_integer::dig_init(const char* str)
     {
         dig = new char[1]{'0'};
         size = 1;
+        _str = new char[2]{'0', 0};
     }
     else if (size > 0)
     {
         //++size;
         // Need realese void clear_null()
         dig = new char[size];
+        _str = new char[size + 1];
         unsigned int j_str = 0;
         if (null_count > 0) j_str = null_count - 1;
 
         for (unsigned int i = 0, j = j_str ;  i < size; ++i, ++j)
         {
             dig[i] = str[j];
+            _str[i] = dig[i];
         }
+
+        _str[size] = static_cast<char>(0);
     }
     else
     {
@@ -72,6 +84,7 @@ void big_integer::dig_init(const char* str)
 
 big_integer::big_integer() : 
     dig{new char[1]{'0'}},
+    _str{new char[2]{'0', 0}},
     size{1}
 {}
 
@@ -141,17 +154,18 @@ big_integer& big_integer::operator=(const std::string& str)
     return *this;
 }
 
-std::string big_integer::to_str()
+const char* big_integer::to_str() 
 {
-    std::string str = dig;
+    // str = new char[size + 1];
 
     // for (unsigned int i = 0; i < size; ++i)
     // {
-    //     str += std::to_string(dig[i]);
+    //     str[i] = dig[i];
     // }
 
-    std::cout << str << '\n';
-    return str;
+    // str[size] = static_cast<char>(0);
+
+    return _str;
 }
 
 big_integer big_integer::operator+(big_integer& other)
@@ -175,11 +189,11 @@ big_integer big_integer::operator+(big_integer& other)
     int r = 0;
     unsigned int size = a.length();
 
-    for (unsigned int i = size - 1; i >= 0; --i)
+    for (int i = size - 1; i >= 0; --i)
     {
         sum = (a[i] - '0') + (b[i] - '0') + r;
         r = sum / 10;
-        c = std::to_string(sum % 10 + '0') + c;
+        c = static_cast<char>(sum % 10 + '0') + c;
     }
 
     if (c[0] == '0')
@@ -188,11 +202,16 @@ big_integer big_integer::operator+(big_integer& other)
     return big_integer(c);
 }
 
+big_integer big_integer::operator+(big_integer&& other) noexcept
+{
+    return *this + other;
+}
+
 big_integer big_integer::operator*(big_integer& other)
 {
-    std::string row = "";
-    std::string col = "";
-    std::string c = "";
+    std::string row;
+    std::string col;
+    std::string c;
     big_integer result("0");
 
     if (size < other.size)
@@ -210,20 +229,25 @@ big_integer big_integer::operator*(big_integer& other)
 
     int mult = 0;
     int r = 0;
-    for (unsigned int i = row.length() - 1; i >= 0; --i)
+    for (int i = row.length() - 1; i >= 0; --i)
     {
-        for (unsigned int j = col.length() - 1; j >= 0; --j)
+        for (int j = col.length() - 1; j >= 0; --j)
         {
             mult = (row[i] - '0') * (col[j] - '0') + r;
             r = mult / 10;
-            c = std::to_string(mult % 10 + '0') + c;
+            c = static_cast<char>(mult % 10 + '0') + c;
         }
-        big_integer temp = big_integer(c);
-        result = result + temp;
+        result = result + big_integer(c);
     }
     
     return result;
 }
+
+big_integer big_integer::operator*(big_integer&& other) noexcept
+{
+    return *this * other;
+}
+
 
 std::ostream& operator<<(std::ostream& out, big_integer& obj)
 {
@@ -236,4 +260,6 @@ big_integer::~big_integer()
 {
     delete[] dig;
     dig = nullptr;
+    delete[] _str;
+    _str = nullptr;
 }

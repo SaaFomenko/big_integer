@@ -1,3 +1,7 @@
+cmake_minimum_required(VERSION 3.18)
+
+project(unit_tests)
+
 find_package(Catch2 3 REQUIRED)
 # These tests can use the Catch2-provided main
 # add_executable(tests test.cpp)
@@ -13,4 +17,4 @@ add_library(tests_lib STATIC
 
 # These tests need their own main
 add_executable(tests test-main.cpp ${lib_source})
-target_link_libraries(tests PRIVATE Catch2::Catch2)
+target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)

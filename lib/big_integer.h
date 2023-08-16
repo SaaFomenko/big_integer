@@ -11,6 +11,7 @@ class big_integer
     private:
         char*  dig;
         int size;
+        char* _str;
     
     public:
         big_integer();
@@ -28,13 +29,17 @@ class big_integer
         virtual ~big_integer();
 
         big_integer operator+(big_integer& other);
+        big_integer operator+(big_integer&& other) noexcept;
+
         big_integer operator*(big_integer& other);
+        big_integer operator*(big_integer&& other) noexcept;
+
         friend std::ostream& operator<<(std::ostream& out, big_integer& obj);
 
         bool valid_digit(char symvol);
-        std::string to_str();
+        const char* to_str();
         void dig_init(const char* str);
-        void dig_init(std::string str);
+        void dig_init(const std::string str);
 };
 
 #endif
