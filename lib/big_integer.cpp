@@ -49,15 +49,13 @@ void big_integer::dig_init(const char* str)
         ++i;
     }
 
-    unsigned int str_size = size;
     size -= null_count; 
 
 
     if (size <= 0)
     {
-        dig = new char[1]{'0'};
-        size = 1;
-        _str = new char[2]{'0', 0};
+        size = 2;
+        _str = new char[size]{'0', 0};
     }
     else if (size > 0)
     {
@@ -164,8 +162,9 @@ const char* big_integer::to_str()
     // }
 
     // str[size] = static_cast<char>(0);
+    const char* str = _str;
 
-    return _str;
+    return str;
 }
 
 big_integer big_integer::operator+(big_integer& other)

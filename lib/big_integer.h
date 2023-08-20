@@ -2,14 +2,13 @@
 #define BIG_INTEGER_H
 
 #include <memory>
-#include <vector>
+//#include <vector>
 #include <iostream>
 
 
 class big_integer
 {
     private:
-        char*  dig;
         int size;
         char* _str;
     
@@ -39,7 +38,6 @@ class big_integer
         bool valid_digit(char symvol);
         const char* to_str();
         void dig_init(const char* str);
-        void dig_init(const std::string str);
 };
 
 #endif

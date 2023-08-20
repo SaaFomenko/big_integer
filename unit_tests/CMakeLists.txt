@@ -10,6 +10,7 @@ find_package(Catch2 3 REQUIRED)
 file(GLOB
 	lib_source "../lib/*.cpp")
 
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 add_library(tests_lib STATIC 
