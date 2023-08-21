@@ -208,24 +208,23 @@ big_integer big_integer::operator+(big_integer&& other) noexcept
 
 big_integer big_integer::operator*(big_integer& other)
 {
-    std::unique_ptr<char*> a;
-    std::unique_ptr<char*> b;
-    std::unique_ptr<char*> c;
+    std::string row;
+    std::string col;
+    std::string c;
     big_integer result;
 
     if (size < other.size)
     {
-        b = to_str();
-        a = other.to_str();
+        row = to_str();
+        col = other.to_str();
+        col = "0" + col;
     }
     else
     {
-        b = other.to_str();
-        a = to_str();
+        row = other.to_str();
+        col = to_str();
+        col = "0" + col;
     }
-
-    int c_size = size + other.size;
-    c = new char[c_size];
 
     int mult = 0;
     int r = 0;
