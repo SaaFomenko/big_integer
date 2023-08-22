@@ -208,37 +208,58 @@ big_integer big_integer::operator+(big_integer&& other) noexcept
 
 big_integer big_integer::operator*(big_integer& other)
 {
-    std::unique_ptr<char*> a;
-    std::unique_ptr<char*> b;
-    std::unique_ptr<char*> c;
+    const char* col;
+    const char* row;
+    int col_size = 0;
+    int row_size = 0;
+//    char* c;
     big_integer result;
 
     if (size < other.size)
     {
-        b = to_str();
-        a = other.to_str();
+        col = to_str();
+        row = other.to_str();
+        col_size = size;
+        row_size = other.size;
     }
     else
     {
-        b = other.to_str();
-        a = to_str();
+        col = other.to_str();
+        row = to_str();
+        col_size = other.size;
+        row_size = size;
     }
 
-    int c_size = size + other.size;
-    c = new char[c_size];
+    int c_size = col_size + row_size;
 
     int mult = 0;
     int r = 0;
-    for (int i = row.length() - 1; i >= 0; --i)
+    for (int i = row_size - 2, level = 0; i >= 0; --i, ++level)
     {
-        for (int j = col.length() - 1; j >= 0; --j)
+        char c[c_size]{};
+        int k = c_size - 2;
+        if (level > 0)
+        {
+            for (int l = k; l >= k - level; --l)
+            {
+                c[l] = '0';
+            }
+            k -=level;
+        }
+        for (int j = col_size - 2; j >= 0; --j)
         {
             mult = (row[i] - '0') * (col[j] - '0') + r;
             r = mult / 10;
-            c = static_cast<char>(mult % 10 + '0') + c;
+            c[k] = static_cast<char>(mult % 10 + '0');
+            --k;
+        }
+        if (k >= 0)
+        {
+            c[k] = '0';
         }
         big_integer temp(c);
-        result = result + std::move(temp);
+        //result = result + std::move(temp);
+        result = result + temp;
     }
     
     return result;
