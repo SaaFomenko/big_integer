@@ -236,7 +236,7 @@ big_integer big_integer::operator*(big_integer& other)
     int r = 0;
     for (int i = row_size - 2, level = 0; i >= 0; --i, ++level)
     {
-        char c[c_size]{};
+        char* c = new char[c_size]{};
         int k = c_size - 2;
         if (level > 0)
         {
@@ -258,6 +258,7 @@ big_integer big_integer::operator*(big_integer& other)
             c[k] = '0';
         }
         big_integer temp(c);
+        delete[] c;
         //result = result + std::move(temp);
         result = result + temp;
     }
