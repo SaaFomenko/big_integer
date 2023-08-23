@@ -1,4 +1,3 @@
-//#include <string.h>
 #include "big_integer.h"
 
 
@@ -34,39 +33,44 @@ bool big_integer::valid_digit(char symvol)
 void big_integer::dig_init(const char* str)
 {
     int i = 0;
-    int null_count = 0;
+    unsigned int null_count = 0;
 
     while(str[i] != 0)
     {
         i += static_cast<int>(valid_digit(str[i]));
     }
 
-
-    //int size = _size;
-    int str_size = i + 1;
+    size = i;
 
     i = 0;
-    while(str[i] == '0' && i < str_size - 1)
+    while(str[i] == '0' && i < size)
     { 
         ++null_count;
         ++i;
     }
 
-    _size = str_size - null_count; 
+    size -= null_count; 
 
-    if (_size <= 1)
+
+    if (size <= 0)
     {
-        _str = new char[2]{'0', 0};
+        size = 1;
+        _str = new char[size]{'0', 0};
     }
-    else if (_size > 1)
+    else if (size > 0)
     {
-        _str = new char[_size];
-        _str[_size - 1] = 0;
+        //++size;
+        // Need realese void clear_null()
+        _str = new char[size + 1];
+        unsigned int j_str = 0;
+        if (null_count > 0) j_str = null_count - 1;
 
-        for (int i = _size - 2, j = str_size - 2; i >= 0; --i, --j)
+        for (unsigned int i = 0, j = j_str ;  i < size; ++i, ++j)
         {
             _str[i] = str[j];
         }
+
+        _str[size] = static_cast<char>(0);
     }
     else
     {
@@ -75,29 +79,28 @@ void big_integer::dig_init(const char* str)
 }
 
 big_integer::big_integer() : 
-    _size{2},
-    _str{new char[2]{'0', 0}}
+    _str{new char[2]{'0', 0}},
+    size{2}
 {}
 
 big_integer::big_integer(const char* str)
 {
-    //_size = strlen(str) + 1;
     dig_init(str);
 }
 
 big_integer::big_integer(const std::string& str)
 {
+    size = str.length();
     const char* chars = str.c_str();
-    //_size = strlen(chars) + 1;
 
     dig_init(chars);
 }
 
 big_integer::big_integer(const big_integer& other)
 {
-    if (_size == other._size)
+    if (size == other.size)
     {
-        for (int i = 0; i < _size; ++i)
+        for (unsigned int i = 0; i < size; ++i)
         {
             _str[i] = other._str[i];
         }
@@ -105,17 +108,17 @@ big_integer::big_integer(const big_integer& other)
     else
     {
         delete[] _str;
-        _size = other._size;
-        _str = new char[_size];
-        for (int i = 0; i < _size; ++i)
+        size = other.size;
+        _str = new char[size];
+        for (unsigned int i = 0; i < size; ++i)
         {
             _str[i] = other._str[i];
         }
     }
 }
 
-big_integer::big_integer(big_integer&& other) noexcept :
-    _size(other._size)
+big_integer::big_integer(big_integer&& other) noexcept : 
+    size(other.size)
 {
     delete[] _str;
     _str = other._str;
@@ -128,14 +131,12 @@ big_integer& big_integer::operator=(const big_integer& other)
 
 big_integer& big_integer::operator=(big_integer&& other) noexcept
 {
-    return *this = other;
+    return *this = big_integer(other);
 }
 
 big_integer& big_integer::operator=(const char* str)
 {
     delete[] _str; 
-
-    //_size = strlen(str) + 1;
     dig_init(str);
 
     return *this;
@@ -145,7 +146,6 @@ big_integer& big_integer::operator=(const std::string& str)
 {
     delete[] _str;
     const char* chars = str.c_str();
-   // _size = str.length() + 1;
 
     dig_init(chars);
 
@@ -154,7 +154,17 @@ big_integer& big_integer::operator=(const std::string& str)
 
 const char* big_integer::to_str() 
 {
-    return _str;
+    // str = new char[size + 1];
+
+    // for (unsigned int i = 0; i < size; ++i)
+    // {
+    //     str[i] = dig[i];
+    // }
+
+    // str[size] = static_cast<char>(0);
+    const char* str = _str;
+
+    return str;
 }
 
 big_integer big_integer::operator+(big_integer& other)
@@ -202,35 +212,35 @@ big_integer big_integer::operator*(big_integer& other)
     const char* row;
     int col_size = 0;
     int row_size = 0;
+//    char* c;
     big_integer result;
 
-    if (_size > other._size)
+    if (size > other.size)
     {
-        col = _str;
-        row = other._str;
-        col_size = _size;
-        row_size = other._size;
+        col = to_str();
+        row = other.to_str();
+        col_size = size;
+        row_size = other.size;
 
     }
     else
     {
-        col = other._str;
-        row = _str;
-        col_size = other._size;
-        row_size = _size;
+        col = other.to_str();
+        row = to_str();
+        col_size = other.size;
+        row_size = size;
     }
 
     std::cout << "col = " << col << '\n';
     std::cout << "row = " << row << '\n';
 
-    const unsigned int c_size = col_size + row_size;
+    int c_size = col_size + row_size;
 
     int mult = 0;
     int r = 0;
     for (int i = row_size - 2, level = 0; i >= 0; --i, ++level)
     {
-        char* c = new char[c_size];
-        c[c_size - 1] = 0;
+        char* c = new char[c_size]{};
         int k = c_size - 2;
         if (level > 0)
         {
@@ -247,7 +257,7 @@ big_integer big_integer::operator*(big_integer& other)
             c[k] = static_cast<char>(mult % 10 + '0');
             --k;
         }
-        for (;k >= 0; --k)
+        if (k >= 0)
         {
             c[k] = '0';
         }
@@ -279,7 +289,7 @@ big_integer::~big_integer()
     _str = nullptr;
 }
 
-int big_integer::len()
+int big_integer::str_size()
 {
-    return _size - 1;
+    return size;
 }

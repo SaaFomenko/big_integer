@@ -9,7 +9,7 @@
 class big_integer
 {
     private:
-        int size;
+        int _size;
         char* _str;
     
     public:
@@ -38,7 +38,7 @@ class big_integer
         bool valid_digit(char symvol);
         const char* to_str();
         void dig_init(const char* str);
-        int str_size();
+        int len();
 };
 
 #endif
