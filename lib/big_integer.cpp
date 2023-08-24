@@ -1,4 +1,3 @@
-//#include <string.h>
 #include "big_integer.h"
 
 
@@ -41,8 +40,6 @@ void big_integer::dig_init(const char* str)
         i += static_cast<int>(valid_digit(str[i]));
     }
 
-
-    //int size = _size;
     int str_size = i + 1;
 
     i = 0;
@@ -81,14 +78,12 @@ big_integer::big_integer() :
 
 big_integer::big_integer(const char* str)
 {
-    //_size = strlen(str) + 1;
     dig_init(str);
 }
 
 big_integer::big_integer(const std::string& str)
 {
     const char* chars = str.c_str();
-    //_size = strlen(chars) + 1;
 
     dig_init(chars);
 }
@@ -114,11 +109,16 @@ big_integer::big_integer(const big_integer& other)
     }
 }
 
-big_integer::big_integer(big_integer&& other) noexcept :
-    _size(other._size)
+// big_integer::big_integer(big_integer&& other) noexcept :
+//     _size(other._size)
+// {
+//     delete[] _str;
+//     _str = other._str;
+// }
+
+big_integer::big_integer(big_integer&& other) noexcept
 {
-    delete[] _str;
-    _str = other._str;
+    *this = other;
 }
 
 big_integer& big_integer::operator=(const big_integer& other)
@@ -135,7 +135,6 @@ big_integer& big_integer::operator=(const char* str)
 {
     delete[] _str; 
 
-    //_size = strlen(str) + 1;
     dig_init(str);
 
     return *this;
@@ -145,7 +144,6 @@ big_integer& big_integer::operator=(const std::string& str)
 {
     delete[] _str;
     const char* chars = str.c_str();
-   // _size = str.length() + 1;
 
     dig_init(chars);
 
@@ -159,36 +157,63 @@ const char* big_integer::to_str()
 
 big_integer big_integer::operator+(big_integer& other)
 {
-    std::string a = this->to_str();
-    std::string b = other.to_str();
-    std::string c = "";
+    big_integer* a;
+    big_integer* b;
+    char* c;
+    int c_size = 0;
 
-    while (a.length() != b.length())
+    if (_size >= other._size)
     {
-        if (a.length() < b.length())
-            a = "0" + a;
-        else
-            b = "0" + b;
+        a = this;
+        b = &other;
+        c_size = _size + 1;
+    }
+    else
+    {
+        a = &other;
+        b = this;
+        c_size = other._size + 1;
     }
 
-    a = "0" + a;
-    b = "0" + b;
+    c = new char[c_size];
+    c[0] = '0';
 
     int sum = 0;
     int r = 0;
-    unsigned int size = a.length();
 
-    for (int i = size - 1; i >= 0; --i)
+    for (int i = b->_size - 2, j = a->_size - 2, k = c_size - 2;
+        i >= 0;
+        --i, --j, --k)
     {
-        sum = (a[i] - '0') + (b[i] - '0') + r;
+        sum = (a->_str[j] - '0') + (b->_str[i] - '0') + r;
         r = sum / 10;
-        c = static_cast<char>(sum % 10 + '0') + c;
+        c[k] = static_cast<char>(sum % 10 + '0');
+        if (j >= 0 && i == 0)
+        {
+            --j;
+            --k;
+            if (r == 0)
+            {
+                for (; j >= 0; --j, --k)
+                {
+                    c[k] = a->_str[j];
+                }
+            }
+            else
+            {
+                for(; r != 0 && j >= 0; --j, --k)
+                {
+                    sum = (a->_str[j] - '0') + r;
+                    r = sum / 10;
+                    c[k] = static_cast<char>(sum % 10 + '0');
+                } 
+            }
+        }
     }
 
-    if (c[0] == '0')
-        c.erase(0, 1);
-
-    return big_integer(c);
+    big_integer result(c);
+    delete[] c;
+    return result;
 }
 
 big_integer big_integer::operator+(big_integer&& other) noexcept
@@ -198,36 +223,26 @@ big_integer big_integer::operator+(big_integer&& other) noexcept
 
 big_integer big_integer::operator*(big_integer& other)
 {
-    const char* col;
-    const char* row;
-    int col_size = 0;
-    int row_size = 0;
+    big_integer* col;
+    big_integer* row;
     big_integer result;
 
     if (_size > other._size)
     {
-        col = _str;
-        row = other._str;
-        col_size = _size;
-        row_size = other._size;
-
+        col = this;
+        row = &other;
     }
     else
     {
-        col = other._str;
-        row = _str;
-        col_size = other._size;
-        row_size = _size;
+        col = &other;
+        row = this;
     }
 
-    std::cout << "col = " << col << '\n';
-    std::cout << "row = " << row << '\n';
-
-    const unsigned int c_size = col_size + row_size;
+    const unsigned int c_size = col->_size + row->_size;
 
     int mult = 0;
     int r = 0;
-    for (int i = row_size - 2, level = 0; i >= 0; --i, ++level)
+    for (int i = row->_size - 2, level = 0; i >= 0; --i, ++level)
     {
         char* c = new char[c_size];
         c[c_size - 1] = 0;
@@ -240,9 +255,9 @@ big_integer big_integer::operator*(big_integer& other)
             }
             k -=level;
         }
-        for (int j = col_size - 2; j >= 0; --j)
+        for (int j = col->_size - 2; j >= 0; --j)
         {
-            mult = (row[i] - '0') * (col[j] - '0') + r;
+            mult = (row->_str[i] - '0') * (col->_str[j] - '0') + r;
             r = mult / 10;
             c[k] = static_cast<char>(mult % 10 + '0');
             --k;
@@ -253,7 +268,6 @@ big_integer big_integer::operator*(big_integer& other)
         }
         big_integer temp(c);
         delete[] c;
-        //result = result + std::move(temp);
         result = result + temp;
     }
     

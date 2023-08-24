@@ -17,7 +17,7 @@ TEST_CASE( "Test functions dig_init, to_str of class big_integer.", "[big-intege
 		bool equal = strncmp(
 			a.to_str(), 
 			null_str, 
-			a.str_size()
+			a.len()
 		) == 0;
 		CHECK(equal);
 	}
@@ -28,7 +28,7 @@ TEST_CASE( "Test functions dig_init, to_str of class big_integer.", "[big-intege
 		bool equal = strncmp(
 			b.to_str(), 
 			b_str,
-			b.str_size()
+			b.len()
 		) == 0;
 		CHECK(equal);
 	}
@@ -41,7 +41,7 @@ TEST_CASE("Test operators +, * of class big_integer.", "[big-integer-operators]"
 		big_integer b(b_str);
 		big_integer result = a + b;
 
-		bool equal = strncmp(result.to_str(), sum_str, result.str_size()) == 0;
+		bool equal = strncmp(result.to_str(), sum_str, result.len()) == 0;
 		CHECK(equal);
 	}
 
@@ -51,7 +51,7 @@ TEST_CASE("Test operators +, * of class big_integer.", "[big-integer-operators]"
 		big_integer b(b_str);
 		big_integer result = a * b;
 
-		bool equal = strncmp(result.to_str(), mult_str, result.str_size()) == 0;
+		bool equal = strncmp(result.to_str(), mult_str, result.len()) == 0;
 		CHECK(equal);
 	}
 
