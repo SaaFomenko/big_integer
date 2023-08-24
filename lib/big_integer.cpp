@@ -88,38 +88,14 @@ big_integer::big_integer(const std::string& str)
     dig_init(chars);
 }
 
-big_integer::big_integer(const big_integer& other)
-{
-    if (_size == other._size)
-    {
-        for (int i = 0; i < _size; ++i)
-        {
-            _str[i] = other._str[i];
-        }
-    }
-    else
-    {
-        delete[] _str;
-        _size = other._size;
-        _str = new char[_size];
-        for (int i = 0; i < _size; ++i)
-        {
-            _str[i] = other._str[i];
-        }
-    }
-}
+big_integer::big_integer(const big_integer& other) 
+: big_integer(other._str)
+{}
 
-// big_integer::big_integer(big_integer&& other) noexcept :
-//     _size(other._size)
-// {
-//     delete[] _str;
-//     _str = other._str;
-// }
-
-big_integer::big_integer(big_integer&& other) noexcept
-{
-    *this = other;
-}
+big_integer::big_integer(big_integer&& other) noexcept 
+:   _size(other._size),
+    _str(std::exchange(other._str, nullptr))
+{}
 
 big_integer& big_integer::operator=(const big_integer& other)
 {
@@ -128,7 +104,10 @@ big_integer& big_integer::operator=(const big_integer& other)
 
 big_integer& big_integer::operator=(big_integer&& other) noexcept
 {
-    return *this = other;
+    _size = other._size;
+    std::swap(_str, other._str);
+
+    return *this;
 }
 
 big_integer& big_integer::operator=(const char* str)
@@ -218,7 +197,8 @@ big_integer big_integer::operator+(big_integer& other)
 
 big_integer big_integer::operator+(big_integer&& other) noexcept
 {
-    return *this + other;
+    big_integer sum = *this + other;
+    return sum;
 }
 
 big_integer big_integer::operator*(big_integer& other)
@@ -266,9 +246,9 @@ big_integer big_integer::operator*(big_integer& other)
         {
             c[k] = '0';
         }
-        big_integer temp(c);
+     //   big_integer temp(c);
+        result = result + big_integer(c);
         delete[] c;
-        result = result + temp;
     }
     
     return result;
@@ -276,7 +256,8 @@ big_integer big_integer::operator*(big_integer& other)
 
 big_integer big_integer::operator*(big_integer&& other) noexcept
 {
-    return *this * other;
+    big_integer mult = *this * other;
+    return mult;
 }
 
 
