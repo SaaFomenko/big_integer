@@ -93,16 +93,19 @@ big_integer::big_integer(const big_integer& other)
 {}
 
 big_integer::big_integer(big_integer&& other) noexcept 
-:   _size(other._size),
-    _str(std::exchange(other._str, nullptr))
-{}
+:   _str(nullptr),
+   _size(0)
+{
+    std::swap(_str, other._str);
+    std::swap(_str, other._str);
+}
 
 big_integer& big_integer::operator=(const big_integer& other)
 {
     return *this = big_integer(other);
 }
 
-big_integer& big_integer::operator=(big_integer&& other) noexcept
+big_integer& big_integer::operator=(big_integer&& other) noexcept 
 {
     _size = other._size;
     std::swap(_str, other._str);
@@ -195,7 +198,7 @@ big_integer big_integer::operator+(big_integer& other)
     return result;
 }
 
-big_integer big_integer::operator+(big_integer&& other) noexcept
+big_integer big_integer::operator+=(big_integer&& other) noexcept
 {
     big_integer sum = *this + other;
     return sum;
