@@ -2,9 +2,9 @@
 #define BIG_INTEGER_H
 
 #include <memory>
-//#include <vector>
 #include <iostream>
 
+//using chars_ptr = std::unique_ptr<char[]>;
 
 class big_integer
 {
@@ -31,7 +31,6 @@ class big_integer
         big_integer operator+=(big_integer&& other) noexcept;
 
         big_integer operator*(big_integer& other);
-//        big_integer& operator*(big_integer&& other) noexcept;
 
         friend std::ostream& operator<<(std::ostream& out, big_integer& obj);
 

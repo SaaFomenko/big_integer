@@ -170,6 +170,7 @@ big_integer big_integer::operator+(big_integer& other)
         c_size = other.size_ + 1;
     }
 
+//    auto c = chars_ptr(new char[c_size]);
     c = new char[c_size];
     c[0] = '0';
 
@@ -206,6 +207,7 @@ big_integer big_integer::operator+(big_integer& other)
         }
     }
 
+   // const char* chars = static_cast<const char*>(c);
     big_integer result(c);
     delete[] c;
     c = nullptr;
