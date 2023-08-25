@@ -9,8 +9,8 @@
 class big_integer
 {
     private:
-        int _size;
-        char* _str;
+        int size_;
+        char* str_;
     
     public:
         big_integer();
@@ -28,10 +28,10 @@ class big_integer
         virtual ~big_integer();
 
         big_integer operator+(big_integer& other);
-        big_integer operator+(big_integer&& other) noexcept;
+        big_integer operator+=(big_integer&& other) noexcept;
 
         big_integer operator*(big_integer& other);
-        big_integer operator*(big_integer&& other) noexcept;
+//        big_integer& operator*(big_integer&& other) noexcept;
 
         friend std::ostream& operator<<(std::ostream& out, big_integer& obj);
 
